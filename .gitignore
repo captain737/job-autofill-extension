@@ -1,0 +1,12 @@
+# secrets — never commit your API keys
+.env
+*.env
+env
+!.env.example
+
+node_modules/
+.DS_Store
+*.log
+*.zip
+*.crx
+*.pem

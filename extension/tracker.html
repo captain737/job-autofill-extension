@@ -1,0 +1,98 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Fillup · Tracker</title>
+  <style>
+    :root { --ink:#111827; --muted:#6b7280; --line:#e5e7eb; --brand:#4f46e5; --brand-soft:#eef2ff; --bg:#f8fafc; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; }
+    .wrap { max-width: 1040px; margin: 0 auto; padding: 28px 16px 60px; }
+    .titlebar { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+    h1 { font-size: 24px; margin: 0; }
+    h2 { font-size: 16px; margin: 0 0 4px; }
+    a { color: var(--brand); }
+    .muted { color: var(--muted); }
+    .small { font-size: 12.5px; }
+    .btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; font: 600 13px system-ui; border-radius: 8px; border: 1px solid #c7d2fe; background: #fff; color: var(--brand); cursor: pointer; text-decoration: none; }
+    .btn:hover { background: var(--brand-soft); }
+    .btn.primary { background: var(--brand); color: #fff; border-color: var(--brand); }
+    .btn.primary:hover { background: #4338ca; }
+    .btn:disabled { opacity: .6; cursor: default; }
+    .stats { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin: 20px 0; }
+    .stat { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; }
+    .stat .n { font-size: 24px; font-weight: 750; }
+    .stat .l { color: var(--muted); font-size: 12.5px; }
+    .card { background: #fff; border: 1px solid var(--line); border-radius: 14px; }
+    .toolbar { display: flex; gap: 8px; flex-wrap: wrap; padding: 12px; border-bottom: 1px solid var(--line); }
+    .toolbar input, .toolbar select { font: 13px system-ui; padding: 8px 10px; border: 1px solid #d1d5db; border-radius: 8px; background: #fff; }
+    .toolbar input { flex: 1; min-width: 180px; }
+    .row { display: grid; grid-template-columns: minmax(0, 1fr) 64px 150px 96px 28px; gap: 12px; align-items: center; padding: 12px 14px; border-bottom: 1px solid var(--line); }
+    .row:last-child { border-bottom: 0; }
+    .row .t { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .row .t a { color: var(--ink); text-decoration: none; }
+    .row .t a:hover { color: var(--brand); text-decoration: underline; }
+    .row .c { color: var(--muted); font-size: 12.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .row select { font: 13px system-ui; padding: 6px 8px; border: 1px solid #d1d5db; border-radius: 8px; background: #fff; width: 100%; }
+    .files { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 4px; }
+    .files a { font-size: 12px; padding: 2px 8px; border: 1px solid var(--line); border-radius: 99px; text-decoration: none; background: #fff; }
+    .files a:hover { border-color: #c7d2fe; background: var(--brand-soft); }
+    .fit { font-weight: 700; font-size: 12px; border-radius: 99px; padding: 3px 0; text-align: center; color: #fff; }
+    .date { color: var(--muted); font-size: 12.5px; }
+    .del { border: 0; background: none; color: #9ca3af; font-size: 18px; cursor: pointer; }
+    .del:hover { color: #b91c1c; }
+    .notes { grid-column: 1 / -1; }
+    .notes textarea { width: 100%; font: 13px system-ui; padding: 7px 9px; border: 1px solid #e5e7eb; border-radius: 8px; min-height: 38px; resize: vertical; background: #fcfcfd; }
+    .empty { padding: 40px 16px; text-align: center; color: var(--muted); }
+    .recs { margin-top: 28px; padding: 18px; }
+    .recs .head { display: flex; justify-content: space-between; gap: 12px; align-items: center; flex-wrap: wrap; }
+    .title-rec { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; margin-top: 10px; display: flex; justify-content: space-between; gap: 12px; align-items: center; flex-wrap: wrap; }
+    .title-rec .links { display: flex; gap: 6px; flex-wrap: wrap; }
+    .title-rec .links a { font-size: 12px; padding: 4px 9px; border: 1px solid var(--line); border-radius: 99px; text-decoration: none; }
+    .title-rec .links a:hover { border-color: #c7d2fe; background: var(--brand-soft); }
+    .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+    .chip { font-size: 12px; background: var(--brand-soft); color: var(--brand); border-radius: 99px; padding: 3px 10px; }
+    .err { color: #991b1b; background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 10px 12px; margin-top: 12px; }
+    .spin { display: inline-block; width: 14px; height: 14px; border: 2px solid #c7d2fe; border-top-color: var(--brand); border-radius: 50%; animation: s .8s linear infinite; vertical-align: -2px; }
+    @keyframes s { to { transform: rotate(360deg); } }
+    @media (max-width: 720px) {
+      .stats { grid-template-columns: repeat(2, 1fr); }
+      .row { grid-template-columns: minmax(0, 1fr) 56px 28px; }
+      .row .st, .row .date { grid-column: span 1; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="titlebar">
+      <div><h1>Applications</h1><div class="muted small">Tracked automatically when you submit an application. Save jobs from the sidebar's Track tab.</div></div>
+      <div style="display:flex;gap:8px"><button class="btn" id="export">Export CSV</button><a class="btn" href="options.html">Profile &amp; settings</a></div>
+    </div>
+
+    <div class="stats" id="stats"></div>
+
+    <div class="card">
+      <div class="toolbar">
+        <input id="q" placeholder="Search company, title, notes…">
+        <select id="status"><option value="">All statuses</option></select>
+        <select id="sort">
+          <option value="recent">Most recent</option>
+          <option value="fit">Best fit first</option>
+          <option value="company">Company A–Z</option>
+        </select>
+      </div>
+      <div id="list"></div>
+    </div>
+
+    <div class="card recs">
+      <div class="head">
+        <div><h2>Find your next jobs</h2><div class="muted small">AI-suggested titles and searches based on your résumé and how your applications are going.</div></div>
+        <button class="btn primary" id="suggest">Suggest searches</button>
+      </div>
+      <div id="recs"></div>
+    </div>
+  </div>
+  <script src="tracker.js"></script>
+</body>
+</html>

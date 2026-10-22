@@ -1,0 +1,31 @@
+<!doctype html><html><head>
+<!-- Fillup demo page: a fake careers site for trying the extension safely. Nothing is sent anywhere. --><meta charset="utf-8"><title>Job Application for Data Engineer at Acme</title>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"JobPosting","title":"Data Engineer","hiringOrganization":{"@type":"Organization","name":"Acme"},"jobLocation":{"@type":"Place","address":{"addressLocality":"San Francisco","addressRegion":"CA"}},"description":"<p>Acme is hiring a Data Engineer to join our Data Platform team in San Francisco. You will design, build and operate the batch and streaming pipelines that power analytics, finance reporting and machine learning across the company.</p><h3>Responsibilities</h3><ul><li>Build and maintain pipelines in Python and Airflow that move terabytes per day into Snowflake</li><li>Own core dbt models, data quality tests and documentation</li><li>Partner with analytics and ML teams on data contracts and SLAs</li><li>Participate in an on-call rotation for data infrastructure</li></ul><h3>Requirements</h3><ul><li>5+ years of experience in data engineering</li><li>Strong SQL and Python</li><li>Experience with Spark or Databricks</li><li>Experience with AWS</li></ul>"}</script>
+<style>body{font:14px system-ui;max-width:640px;margin:30px auto}label{display:block;margin:8px 0}</style><style>/* demo skin */
+html{background:#eef1f5}
+body{font:15px/1.5 "Inter",system-ui,sans-serif!important;max-width:none!important;margin:0!important;padding:0 0 40px!important;color:#1f2937;background:#eef1f5}
+body::before{content:"▲  Acme Careers";display:block;background:#0f2a4a;color:#fff;font:700 17px system-ui;padding:16px 40px;letter-spacing:.2px;margin-bottom:26px}
+#app{background:#fff;border:1px solid #dde3ea;border-radius:12px;padding:26px 32px;margin:0 0 0 40px;width:600px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+h1,h2{margin:0 0 12px;color:#0f2a4a} h3{margin:16px 0 6px;font-size:15px}
+label{display:block;margin:12px 0!important;font-weight:600;font-size:13.5px;color:#374151}
+input:not([type=checkbox]):not([type=radio]):not([type=file]),select,textarea{display:block;width:100%;box-sizing:border-box;margin-top:5px;padding:9px 11px;border:1px solid #cbd5e1;border-radius:7px;font:14px system-ui;background:#fff;font-weight:400}
+textarea{min-height:90px}
+button{font:600 14px system-ui;padding:9px 18px;border-radius:7px;border:1px solid #0f62fe;background:#0f62fe;color:#fff;cursor:pointer;margin:8px 6px 0 0}
+button[aria-haspopup]{background:#fff;color:#111;border-color:#cbd5e1;font-weight:400;display:block;width:100%;text-align:left}
+.modal{border:1px solid #dde3ea!important;border-radius:10px;padding:16px!important;background:#f8fafc}
+.job-description p{color:#4b5563;max-height:120px;overflow:hidden}
+.err{color:#b91c1c} .entry{border-left:3px solid #e5e7eb;padding-left:14px;margin:10px 0}
+</style>
+</head><body>
+<h1>Data Engineer</h1><div class="job__description"><p>We're hiring a Data Engineer…</p></div>
+<form id="app"><h2>Apply for this job</h2>
+<label for="fn">First Name*</label><input id="fn" required>
+<label for="ln">Last Name*</label><input id="ln" required>
+<label for="em">Email*</label><input id="em" type="email" required>
+<label for="ph">Phone</label><input id="ph">
+<label>Resume/CV* <input type="file" name="resume"></label>
+<label>Why do you want to join Acme?* <textarea name="why" required></textarea></label>
+<label>LinkedIn Profile* <input name="li" required></label>
+<button type="submit">Submit application</button></form>
+<script>document.getElementById('app').addEventListener('submit',e=>e.preventDefault())</script>
+</body></html>

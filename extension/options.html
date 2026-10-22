@@ -1,0 +1,212 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Fillup</title>
+  <style>
+    :root { --ink:#111827; --muted:#6b7280; --line:#e5e7eb; --brand:#4f46e5; --brand-soft:#eef2ff; --warn:#f59e0b; --warn-soft:#fffbeb; --ok:#16a34a; }
+    * { box-sizing: border-box; }
+    body { max-width: 760px; margin: 0 auto; padding: 32px 16px 0; font: 14px/1.45 system-ui, sans-serif; color: var(--ink); background: #fff; }
+    h1 { font-size: 24px; margin: 0 0 6px; }
+    h2 { font-size: 15px; margin: 28px 0 10px; padding-bottom: 6px; border-bottom: 1px solid var(--line); }
+    p { margin: 0 0 12px; }
+    .muted, .hint { color: var(--muted); font-size: 13px; }
+    [hidden] { display: none !important; }
+
+    /* Welcome */
+    #welcome { text-align: center; padding-top: 48px; }
+    #welcome h1 { font-size: 28px; }
+    .drop { display: block; margin: 28px auto 14px; max-width: 520px; padding: 44px 24px; border: 2px dashed #c7d2fe;
+            border-radius: 14px; background: var(--brand-soft); cursor: pointer; transition: border-color .15s, background .15s; }
+    .drop:hover, .drop.over { border-color: var(--brand); background: #e0e7ff; }
+    .drop strong { display: block; font-size: 17px; color: var(--brand); margin-bottom: 4px; }
+    .steps { display: flex; justify-content: center; gap: 22px; margin: 22px 0 0; color: var(--muted); font-size: 13px; flex-wrap: wrap; }
+    .steps b { color: var(--ink); }
+    .spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid #c7d2fe; border-top-color: var(--brand);
+               border-radius: 50%; animation: spin .8s linear infinite; vertical-align: -3px; margin-right: 8px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .error { color: #b91c1c; background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 12px 14px;
+             text-align: left; max-width: 520px; margin: 12px auto; white-space: pre-line; }
+    code { background: #f3f4f6; padding: 1px 5px; border-radius: 4px; font-size: 12px; }
+
+    /* Profile form */
+    .banner { background: var(--brand-soft); border: 1px solid #c7d2fe; border-radius: 10px; padding: 12px 14px; margin: 16px 0 0; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 16px; }
+    @media (max-width: 560px) { .grid { grid-template-columns: 1fr; } }
+    label { display: flex; flex-direction: column; gap: 4px; font-weight: 500; }
+    label.full { grid-column: 1 / -1; }
+    input, select, textarea { font: 14px system-ui; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px; font-weight: 400; background: #fff; width: 100%; }
+    textarea { min-height: 110px; resize: vertical; }
+    .from-resume { background: var(--brand-soft); border-color: #a5b4fc; }
+    .needs { background: var(--warn-soft); border-color: var(--warn); }
+    .section-needs h2 { border-color: var(--warn); }
+    .tag { display: inline-block; font-size: 11px; font-weight: 600; padding: 1px 7px; border-radius: 99px; margin-left: 6px; vertical-align: 1px; }
+    .tag.brand { background: var(--brand-soft); color: var(--brand); }
+    .tag.warn { background: var(--warn-soft); color: #b45309; }
+    .check { flex-direction: row; align-items: center; gap: 8px; font-weight: 400; margin: 6px 0; }
+    .check input { width: auto; }
+    .titlebar { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+    .titlebar h1 { margin: 0; }
+    .res { display: grid; grid-template-columns: auto 1fr auto; gap: 4px 12px; align-items: center; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+    .res:last-child { border-bottom: 0; }
+    .res .nm { font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .res .sub { color: var(--muted); font-size: 12px; }
+    .res .acts { display: flex; gap: 6px; }
+    .res .acts button { border: 1px solid var(--line); background: #fff; border-radius: 6px; padding: 4px 8px; font: 12px system-ui; cursor: pointer; color: #374151; }
+    .res .acts button:hover { border-color: #c7d2fe; color: var(--brand); }
+    .res input[type=radio] { width: auto; }
+    .resume-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .btn { padding: 10px 20px; font: 600 14px system-ui; color: #fff; background: var(--brand); border: 0; border-radius: 8px; cursor: pointer; }
+    .btn.secondary { background: #fff; color: var(--brand); border: 1px solid #c7d2fe; }
+    .btn:hover { filter: brightness(.95); }
+    .bar { position: sticky; bottom: 0; background: #fff; padding: 14px 0; margin-top: 24px; border-top: 1px solid var(--line); display: flex; align-items: center; gap: 12px; }
+    #saved { color: var(--ok); }
+    details summary { cursor: pointer; color: var(--muted); margin-top: 8px; }
+
+    /* Memory */
+    .mem-tools { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 10px; }
+    .mem-tools input { flex: 1; min-width: 180px; }
+    .btn.small { padding: 7px 12px; font-size: 13px; display: inline-block; }
+    .btn.danger { color: #b91c1c; border-color: #fecaca; }
+    .mem-list { border: 1px solid var(--line); border-radius: 10px; max-height: 420px; overflow: auto; }
+    .mem { display: grid; grid-template-columns: 1fr auto; gap: 4px 10px; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+    .mem:last-child { border-bottom: 0; }
+    .mem .q { font-weight: 500; }
+    .mem .a { grid-column: 1 / -1; }
+    .mem .a textarea, .mem .a input { min-height: 0; font-size: 13px; }
+    .mem .a textarea { min-height: 60px; }
+    .mem .meta { color: var(--muted); font-size: 12px; white-space: nowrap; }
+    .mem .del { border: 0; background: none; color: #9ca3af; cursor: pointer; font-size: 16px; }
+    .mem .del:hover { color: #b91c1c; }
+    .src { font-size: 11px; font-weight: 600; padding: 1px 6px; border-radius: 99px; margin-right: 6px; }
+    .src.you { background: #dcfce7; color: #166534; }
+    .src.ai { background: var(--brand-soft); color: var(--brand); }
+    .empty { padding: 18px; color: var(--muted); text-align: center; }
+
+    /* Wizard */
+    .wz-steps { list-style: none; padding: 0; margin: 18px 0; display: grid; grid-template-columns: repeat(8, 1fr); gap: 6px; }
+    .wz-steps li { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 11.5px; color: var(--muted); text-align: center; }
+    .wz-steps li .n { width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; border: 2px solid var(--line); background: #fff; font-weight: 700; font-size: 12px; }
+    .wz-steps li.on { color: var(--brand); font-weight: 600; }
+    .wz-steps li.on .n { border-color: var(--brand); background: var(--brand); color: #fff; }
+    .wz-steps li.done { cursor: pointer; color: #374151; }
+    .wz-steps li.done .n { border-color: #a5b4fc; color: var(--brand); background: var(--brand-soft); }
+    .wz-card { border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px 20px; }
+    .wz-card h2 { margin-top: 0; border: 0; padding: 0; font-size: 18px; }
+    #wzFields.grid { margin-top: 6px; }
+    .wf .wl { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; font-weight: 500; margin-bottom: 4px; }
+    .wf .na { flex-direction: row; align-items: center; gap: 5px; font-weight: 400; font-size: 12px; color: var(--muted); white-space: nowrap; cursor: pointer; }
+    .wf .na input { width: auto; }
+    .wf input:disabled, .wf select:disabled { background: #f3f4f6; color: #9ca3af; }
+    .wf.bad input:not([type=checkbox]), .wf.bad select { border-color: #ef4444; background: #fef2f2; }
+    .wf .ferr { color: #b91c1c; font-size: 12px; margin-top: 3px; }
+    #wzFields .check { margin: 10px 0; align-items: flex-start; }
+    #wzFields .check input { margin-top: 3px; }
+    @media (max-width: 640px) { .wz-steps { grid-template-columns: repeat(4, 1fr); } }
+
+    /* Done */
+    #done { text-align: center; padding-top: 72px; }
+    #done .big { font-size: 44px; }
+  </style>
+</head>
+<body>
+
+  <!-- Step 1: upload résumé -->
+  <section id="welcome" hidden>
+    <h1>⚡ Set up Fillup</h1>
+    <p class="muted">Upload your résumé. We'll fill in your profile from it, and you'll review everything before it's saved.</p>
+    <label class="drop" id="drop">
+      <input type="file" id="welcomeFile" accept=".pdf,.docx,.txt" hidden>
+      <strong>Drop your résumé here</strong>
+      <span class="muted">or click to choose · PDF, DOCX or TXT</span>
+    </label>
+    <div id="welcomeStatus"></div>
+    <div class="steps"><span><b>1</b> Upload résumé</span><span><b>2</b> Review your profile</span><span><b>3</b> Autofill applications</span></div>
+    <p style="margin-top:28px"><a href="#" id="manual" class="muted">No résumé file handy? Enter everything by hand</a></p>
+  </section>
+
+  <!-- Step 2: guided check of everything read from the résumé -->
+  <section id="wizard" hidden>
+    <h1>Check your profile</h1>
+    <p class="muted">Go through each step and confirm or fix what we read. Every field needs an answer.</p>
+    <ol class="wz-steps" id="wzSteps"></ol>
+    <div class="wz-card">
+      <h2 id="wzTitle"></h2>
+      <p class="hint" id="wzNote"></p>
+      <div id="wzFields"></div>
+      <div id="wzErr" class="error" hidden></div>
+    </div>
+    <div class="bar"><button class="btn secondary" id="wzBack">← Back</button><span style="flex:1"></span><button class="btn" id="wzNext">Next</button></div>
+  </section>
+
+  <!-- Step 3: full profile (editing later) -->
+  <section id="main" hidden>
+    <div class="titlebar"><h1>Your profile</h1><span><a class="btn secondary small" href="#" id="rerun" style="text-decoration:none">Guided setup</a> <a class="btn secondary small" href="tracker.html" style="text-decoration:none">Application tracker →</a></span></div>
+    <p class="muted">Stored only in this browser. Used to fill job applications.</p>
+    <div id="banner" class="banner" hidden></div>
+
+    <h2>Résumés</h2>
+    <p class="hint">The default is used for new applications. Tailored résumés you generate in the sidebar's Match tab appear here too (edit them there), and you can pick any of them per job.</p>
+    <div id="resumeList" class="mem-list"></div>
+    <div class="resume-row" style="margin-top:10px">
+      <label class="btn secondary" style="display:inline-block">
+        <input type="file" id="resumeFile" accept=".pdf,.docx,.txt" hidden>Upload a résumé
+      </label>
+      <span id="resumeStatus" class="muted"></span>
+    </div>
+
+    <form id="form"></form>
+
+    <h2>Answer memory <span id="memCount" class="tag brand"></span></h2>
+    <p class="hint">Every time you submit or click Next on an application, your final answers are saved here, including ones you typed or corrected. The AI uses them on future applications. <b>You</b> = typed or corrected by you; <b>AI</b> = an AI answer you kept.</p>
+    <div class="mem-tools">
+      <input id="memSearch" placeholder="Search questions or answers…">
+      <button type="button" class="btn secondary small" id="memExport">Export</button>
+      <label class="btn secondary small"><input type="file" id="memImport" accept=".json" hidden>Import</label>
+      <button type="button" class="btn secondary small danger" id="memClear">Clear all</button>
+    </div>
+    <div id="memList" class="mem-list"></div>
+
+    <h2>Accounts <span id="accCount" class="tag brand"></span></h2>
+    <p class="hint">Job-site accounts created or saved by autopilot. Passwords are encrypted in this browser; Chrome may also offer to save them. Deleting one here doesn't delete the account on the site.</p>
+    <div id="accList" class="mem-list"></div>
+
+    <h2>AI</h2>
+    <div class="grid">
+      <label>Backend URL
+        <input id="backendUrl" placeholder="http://localhost:8787">
+      </label>
+    </div>
+    <details>
+      <summary>Résumé text used by the AI</summary>
+      <p class="hint" style="margin-top:8px">Filled automatically for DOCX/TXT résumés. PDFs are read by the backend, so this can stay empty (paste text here if your PDF is a scanned image).</p>
+      <textarea id="resumeText"></textarea>
+    </details>
+
+    <h2>Settings</h2>
+    <label class="check"><input type="checkbox" id="autopilot"> <span><b>Autopilot</b>: click Apply, sign in / create accounts, and click Next through each step. It never clicks Submit.</span></label>
+    <label class="check"><input type="checkbox" id="autoAccount"> Create accounts automatically on job sites (unique strong password per site)</label>
+    <label class="check"><input type="checkbox" id="acceptTerms"> When creating an account, tick the site's "I agree to the terms" box for me</label>
+    <label class="check"><input type="checkbox" id="autoOpen"> Open the sidebar automatically on application forms</label>
+    <label class="check"><input type="checkbox" id="autoFill"> Automatically fill job applications as soon as they're detected</label>
+    <label class="check"><input type="checkbox" id="autoAnalyze"> Score my fit on every job posting I open (uses an AI call per posting; otherwise it scores when you open Match or when autopilot applies)</label>
+    <div id="pausedRow" class="hint" hidden></div>
+    <p class="hint" id="shortcut" style="margin-top:10px"></p>
+    <label class="check"><input type="checkbox" id="overwrite"> Let the AI correct fields that already have a value (recommended: fixes what sites like Workday mis-parse from your résumé)</label>
+
+    <div class="bar"><button class="btn" id="save">Save profile</button><span id="saved"></span></div>
+  </section>
+
+  <!-- Step 3: done -->
+  <section id="done" hidden>
+    <div class="big">✅</div>
+    <h1>You're all set</h1>
+    <p class="muted">Open any job posting or application. The sidebar scores your fit, fills the form,<br>tailors your résumé and tracks what you've applied to. It learns from every application you submit.</p>
+    <p style="margin-top:18px"><a class="btn" href="tracker.html" style="text-decoration:none">Open the application tracker</a></p>
+    <p style="margin-top:24px"><a href="#" id="editAgain">Edit profile</a></p>
+  </section>
+
+  <script src="wizard.js"></script>
+  <script src="options.js"></script>
+</body>
+</html>
